@@ -1,101 +1,132 @@
-import Image from "next/image";
+// app/page.tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import TaskList from "./components/TaskList";
+import Badges from "./components/Badges";
+import { badgeData, badgeConditions } from "./components/Badges";
+import { Badge, Task } from "./components/types";
+import Link from "next/link";
+import { initialTasks } from "./components/initialTasks";
+
+function stripConditions(badges: Badge[]): Omit<Badge, "condition">[] {
+  return badges.map(({ condition, ...rest }) => rest);
+}
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [totalPoints, setTotalPoints] = useState<number>(0);
+  const [pointsToday, setPointsToday] = useState<number>(0);
+  const [streak, setStreak] = useState<number>(0);
+  const [lastCompletedDate, setLastCompletedDate] = useState<string | null>(null);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [newBadge, setNewBadge] = useState<Badge | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks") || "null");
+    return savedTasks || initialTasks; // Load from localStorage or use initialTasks
+});
+
+useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks)); // Save to localStorage whenever tasks change
+}, [tasks]);
+
+useEffect(() => {
+  // Load badges from localStorage initially or use default badge data
+  const savedBadges = JSON.parse(localStorage.getItem("badges") || "null") || badgeData;
+
+  // Evaluate each badge's condition using the updated tasks data
+  const updatedBadges = savedBadges.map((badge: Omit<Badge, 'condition'>): Badge => {
+      const condition = badgeConditions[badge.id];
+      
+      if (condition && !badge.isUnlocked && condition(tasks)) {
+          setNewBadge(badge); // Trigger popup for this badge
+          return { ...badge, isUnlocked: true }; // Unlock the badge
+      }
+      
+      return badge;
+  });
+
+  // Only update `badges` if there's a change to avoid infinite loops
+  if (JSON.stringify(updatedBadges) !== JSON.stringify(badges)) {
+      setBadges(updatedBadges);
+      localStorage.setItem("badges", JSON.stringify(updatedBadges)); // Save updated badges to localStorage
+  }
+}, [tasks]); // Depend only on `tasks` to trigger the effect
+
+
+  const handleTaskComplete = (points: number) => {
+    setTotalPoints(prev => {
+      const newTotal = prev + points;
+      localStorage.setItem("totalPoints", newTotal.toString());
+      return newTotal;
+    });
+    setPointsToday(prev => {
+      const newPointsToday = prev + points;
+      localStorage.setItem("pointsToday", newPointsToday.toString());
+      return newPointsToday;
+    });
+  };
+
+  const handleAllTasksComplete = () => {
+    const today = new Date().toISOString().split("T")[0];
+    if (lastCompletedDate !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayString = yesterday.toISOString().split("T")[0];
+      const newStreak = lastCompletedDate === yesterdayString ? streak + 1 : 1;
+      setStreak(newStreak);
+      setLastCompletedDate(today);
+      localStorage.setItem("streak", newStreak.toString());
+      localStorage.setItem("lastCompletedDate", today);
+    }
+  };
+
+  const clearLocalStorage = () => {
+    localStorage.clear();
+    setTotalPoints(0);
+    setPointsToday(0);
+    setStreak(0);
+    setLastCompletedDate(null);
+    window.location.reload(); // Refresh the page
+  };
+
+  return (
+    <main style={{ padding: "2rem" }}>
+      <h1>Task Tapper</h1>
+      <h2>Total Points: {totalPoints}</h2>
+      <h3>Points Today: {pointsToday}</h3>
+      <h3>
+        Daily Streak: {streak} {streak === 1 ? "day" : "days"}
+      </h3>
+      <Badges badges={badges} />
+      <Link href="/badges">
+        <button
+          style={{
+            marginTop: "1rem",
+            padding: "0.5rem 1rem",
+            borderRadius: "4px",
+            backgroundColor: "#0070f3",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          View All Badges
+        </button>
+      </Link>
+      <TaskList
+                tasks={tasks}
+                setTasks={setTasks}
+                onComplete={handleTaskComplete}
+                onAllTasksComplete={handleAllTasksComplete}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <button
+        onClick={clearLocalStorage}
+        style={{ marginTop: "1rem", padding: "0.5rem 1rem" }}
+      >
+        Reset All Progress
+      </button>
+    </main>
   );
 }
