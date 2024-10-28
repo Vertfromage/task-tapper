@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task Tapper (or Life Level Up)
 
-## Getting Started
+Task Tapper, also known as Life Level Up, is a gamified productivity app designed to make daily tasks and goal-tracking more engaging through small, achievable rewards. By incorporating task streaks, points, and badge unlocks, Task Tapper aims to encourage consistent habits and make "adulting" tasks more enjoyable.
 
-First, run the development server:
+## Concept
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This app addresses the challenges of daily productivity, especially for users who might struggle with maintaining routines for small tasks. Inspired by the motivational mechanics of apps like Duolingo and Pokémon Go, Task Tapper rewards users for completing tasks and maintaining streaks, unlocking fun badges as they make consistent progress.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Current Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Task Management**: Users can view and complete daily tasks. Each task is assigned points and maintains its own streak and completion status.
+- **Persistent Task Tracking**: Tasks and their completion statuses are saved in `localStorage`, ensuring progress is preserved across sessions.
+- **Badges**: Users can earn badges for specific milestones, such as reaching a 3-day streak on a task, completing all tasks in a day, or achieving a high total of points.
+- **Points & Streaks**: Tasks have an individual streak count, which resets if a day is missed. Each completed task adds points to the user’s total score, which can unlock achievement badges.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Future Goals
 
-## Learn More
+- **Account System & Data Syncing**: Enable users to create accounts and sync their progress across devices.
+- **More Badge Conditions**: Introduce more varied badges, such as a badge for completing specific tasks within a limited time frame.
+- **Improved UI/UX**: Add animations and visual feedback to make the app more engaging and polished.
+- **Daily Reminders**: Integrate push notifications or reminders to encourage daily task completion.
+- **Customizable Task List**: Allow users to add their own custom tasks and define specific goals or habits they want to track.
+- **Social Features**: Introduce a friend system or family plan, allowing users to share their progress or even compete for streaks and points.
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend**: Built with [Next.js](https://nextjs.org/) and [React](https://reactjs.org/), leveraging functional components and hooks.
+- **State Management**: Managed using React's `useState` and `useEffect` hooks, with persistent storage in `localStorage`.
+- **Deployment**: Hosted on [Vercel](https://vercel.com/) (ideal for Next.js applications).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Contributions are welcome! If you have ideas for new features or improvements, please feel free to open an issue or submit a pull request.
