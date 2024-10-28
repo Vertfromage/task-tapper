@@ -9,10 +9,6 @@ import { Badge, Task } from "./components/types";
 import Link from "next/link";
 import { initialTasks } from "./components/initialTasks";
 
-function stripConditions(badges: Badge[]): Omit<Badge, "condition">[] {
-  return badges.map(({ condition, ...rest }) => rest);
-}
-
 
 export default function Home() {
   const [totalPoints, setTotalPoints] = useState<number>(0);
@@ -20,7 +16,7 @@ export default function Home() {
   const [streak, setStreak] = useState<number>(0);
   const [lastCompletedDate, setLastCompletedDate] = useState<string | null>(null);
   const [badges, setBadges] = useState<Badge[]>([]);
-  const [newBadge, setNewBadge] = useState<Badge | null>(null);
+  // const [newBadge, setNewBadge] = useState<Badge | null>(null);
 
   const [tasks, setTasks] = useState<Task[]>(() => {
     const savedTasks = JSON.parse(localStorage.getItem("tasks") || "null");
@@ -37,15 +33,14 @@ useEffect(() => {
 
   // Evaluate each badge's condition using the updated tasks data
   const updatedBadges = savedBadges.map((badge: Omit<Badge, 'condition'>): Badge => {
-      const condition = badgeConditions[badge.id];
-      
-      if (condition && !badge.isUnlocked && condition(tasks)) {
-          setNewBadge(badge); // Trigger popup for this badge
-          return { ...badge, isUnlocked: true }; // Unlock the badge
-      }
-      
-      return badge;
+    if (badgeConditions[badge.id] && !badge.isUnlocked && badgeConditions[badge.id](tasks)) {
+        // setNewBadge(badge); // Trigger popup for this badge
+        return { ...badge, isUnlocked: true }; // Unlock the badge
+    }
+    
+    return badge;
   });
+
 
   // Only update `badges` if there's a change to avoid infinite loops
   if (JSON.stringify(updatedBadges) !== JSON.stringify(badges)) {
