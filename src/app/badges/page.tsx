@@ -5,10 +5,16 @@
 import { badgeData } from '../components/Badges'; // Import the default badge data
 import BadgeDisplay from '../components/Badge'; // Rename the Badge component to BadgeDisplay
 import { Badge } from '../components/types'; // Import the Badge type
+import { useEffect, useState } from 'react';
 
 export default function BadgesPage() {
-    // Access `localStorage` directly as we're now running only on the client
-    const badges: Badge[] = JSON.parse(localStorage.getItem("badges") || "null") || badgeData;
+    const [badges, setBadges] = useState<Badge[]>(badgeData); // Set initial state to default data
+
+    useEffect(() => {
+        // Ensure `localStorage` access only occurs on the client
+        const savedBadges = JSON.parse(localStorage.getItem("badges") || "null") || badgeData;
+        setBadges(savedBadges);
+    }, []); // Empty dependency array to run only once on mount
 
     return (
         <div style={{ padding: '2rem' }}>

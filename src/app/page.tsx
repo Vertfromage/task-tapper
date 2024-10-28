@@ -18,14 +18,16 @@ export default function Home() {
   const [badges, setBadges] = useState<Badge[]>([]);
   // const [newBadge, setNewBadge] = useState<Badge | null>(null);
 
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks") || "null");
-    return savedTasks || initialTasks; // Load from localStorage or use initialTasks
-});
+  const [tasks, setTasks] = useState<Task[]>(initialTasks); // Start with initialTasks
 
-useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks)); // Save to localStorage whenever tasks change
-}, [tasks]);
+  useEffect(() => {
+      const savedTasks = JSON.parse(localStorage.getItem("tasks") || "null");
+      if (savedTasks) setTasks(savedTasks); // Load tasks from localStorage on client
+  }, []);
+  
+  useEffect(() => {
+      localStorage.setItem("tasks", JSON.stringify(tasks)); // Save tasks to localStorage whenever they change
+  }, [tasks]);
 
 useEffect(() => {
   // Load badges from localStorage initially or use default badge data
