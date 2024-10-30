@@ -2,24 +2,26 @@
 
 // components/Badge.tsx
 
-import { Badge } from './types'; // Import Badge type from types
+import { Badge } from "./types"; // Import Badge type from types
 
 interface BadgeProps {
-    badge: Badge; // Use Badge type directly for consistency
+  badge: Badge; // Use Badge type directly for consistency
 }
 
-export default function BadgeDisplay({ badge }: BadgeProps) { // Export as BadgeDisplay for consistency
-    return (
-        <div style={{
-            padding: '1rem',
-            borderRadius: '8px',
-            backgroundColor: badge.isUnlocked ? '#FFD700' : '#ccc',
-            textAlign: 'center',
-            width: '120px'
-        }}>
-            <div style={{ fontSize: '2rem' }}>{badge.emoji}</div>
-            <h3>{badge.name}</h3>
-            <p style={{ fontSize: '0.8rem' }}>{badge.isUnlocked ? badge.description : "Locked"}</p>
-        </div>
-    );
+export default function BadgeDisplay({ badge }: BadgeProps) {
+  return (
+    <div
+      className={`p-6 rounded-xl text-center w-32 transition-all transform ${
+        badge.isUnlocked
+          ? "bg-accent text-white shadow-lg"
+          : "bg-gray-200 text-gray-500 shadow-sm"
+      }`}
+    >
+      <div className="text-5xl mb-3">{badge.emoji}</div>
+      <h3 className="text-lg font-bold">{badge.name}</h3>
+      <p className="text-xs mt-1">
+        {badge.isUnlocked ? badge.description : "Locked"}
+      </p>
+    </div>
+  );
 }

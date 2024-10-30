@@ -1,31 +1,87 @@
-// components/TaskItem.tsx
-"use client";
-
+import { useState, useEffect } from "react";
 import { Task } from "./types";
 
 interface TaskItemProps {
-    task: Task;
-    onComplete: () => void;
+  task: Task;
+  onComplete: () => void;
+  updateTaskTime: (taskId: number, elapsedTime: number) => void;
 }
 
-export default function TaskItem({ task, onComplete }: TaskItemProps) {
-    return (
-        <div style={{ margin: '1rem 0', padding: '1rem', border: '1px solid #ddd' }}>
-            <p>{task.name}</p>
-            <p>Streak: {task.streak} {task.streak === 1 ? "day" : "days"}</p>
-            <button
-                onClick={onComplete}
-                disabled={task.completedToday}
-                style={{
-                    backgroundColor: task.completedToday ? '#ddd' : '#0070f3',
-                    color: '#fff',
-                    padding: '0.5rem',
-                    border: 'none',
-                    cursor: task.completedToday ? 'default' : 'pointer',
-                }}
+export default function TaskItem({
+  task,
+  onComplete,
+  updateTaskTime,
+}: TaskItemProps) {
+  const [elapsedTime, setElapsedTime] = useState(task.elapsedTime || 0);
+  const [isRunning, setIsRunning] = useState(task.isRunning || false);
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
+  const startTimer = () => {
+    if (!isRunning) {
+      setIsRunning(true);
+      setTimer(setInterval(() => setElapsedTime((prev) => prev + 1), 1000));
+    }
+  };
+
+  const stopTimer = () => {
+    if (isRunning && timer) {
+      clearInterval(timer);
+      setTimer(null);
+      setIsRunning(false);
+      updateTaskTime(task.id, elapsedTime); // Save the time on stop
+    }
+  };
+
+  const markComplete = () => {
+    stopTimer();
+    onComplete();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timer) clearInterval(timer); // Cleanup timer on unmount
+    };
+  }, [timer]);
+
+  return (
+    <div className="my-4 p-4 border border-gray-300 rounded-lg shadow-sm">
+      <p className="text-lg font-semibold text-text mb-1">{task.name}</p>
+      {task.streak>0 && <p className="text-sm text-text-muted mb-1">Streak: {task.streak} days</p>}
+      {elapsedTime >0 && <p className="text-sm text-text-muted mb-1">
+        Elapsed Time: {elapsedTime || 0} seconds
+      </p>}
+
+      <div className="flex gap-2">
+        {!task.completedToday && (
+          <>
+            {!isRunning ? <button
+              onClick={startTimer}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg"
+              disabled={isRunning}
             >
-                {task.completedToday ? "Completed" : `Complete +${task.points} points`}
-            </button>
-        </div>
-    );
+              Start
+            </button> :
+            <button
+              onClick={stopTimer}
+              className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
+              disabled={!isRunning}
+            >
+              Stop
+            </button>}
+          </>
+        )}
+
+        <button
+          onClick={markComplete}
+          className={`px-4 py-2 rounded-lg ${
+            task.completedToday
+              ? "bg-green-500 text-white"
+              : "bg-blue-500 text-white"
+          }`}
+        >
+          {task.completedToday ? "Complete! 🎉" : "Mark Complete"}
+        </button>
+      </div>
+    </div>
+  );
 }
