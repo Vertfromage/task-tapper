@@ -107,7 +107,9 @@ export default function Home() {
     <main className="p-8 bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground">
       <div className="flex flex-col md:flex-row items-center justify-between bg-gray-100 dark:bg-darkGray p-4 rounded-lg mb-6">
         <div className="text-center md:text-left">
-          <h1 className="text-3xl font-display font-semibold">Task Tapper</h1>
+          <h1 className="text-3xl font-display font-semibold text-gray-800 dark:text-gray-100">
+            Task Tapper
+          </h1>
           <p className="text-sm text-text-muted dark:text-gray-400 italic mt-1">
             Every day is a new day!
           </p>
