@@ -61,9 +61,7 @@ export default function TaskList({
             completedToday: true,
             lastCompletedDate: today,
             streak: newStreak,
-            time: task.time
-              ? (task.time + (task.elapsedTime || 0)) / 2
-              : task.elapsedTime || 0,
+            time: Math.max(task.time, task.elapsedTime || 0), // Keep the maximum time
             elapsedTime: 0, // Reset elapsed time after completion
           };
         }

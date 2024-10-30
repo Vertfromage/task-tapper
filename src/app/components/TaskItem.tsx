@@ -43,9 +43,12 @@ export default function TaskItem({
     };
   }, [timer]);
 
+  // Convert estimated time from seconds to minutes, rounded
+  const estimatedMinutes = Math.ceil(task.time / 60);
   return (
     <div className="my-4 p-4 border border-gray-300 rounded-lg shadow-sm">
-      <p className="text-lg font-semibold text-text mb-1">{task.name}</p>
+      <p className="text-lg font-bold text-text mb-1">{task.name}</p>
+      <p className="text-sm text-text-muted mb-1">Est. {estimatedMinutes} minutes</p>
       {task.streak>0 && <p className="text-sm text-text-muted mb-1">Streak: {task.streak} days</p>}
       {elapsedTime >0 && <p className="text-sm text-text-muted mb-1">
         Elapsed Time: {elapsedTime || 0} seconds
