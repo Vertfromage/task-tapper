@@ -45,41 +45,55 @@ export default function TaskItem({
 
   // Convert estimated time from seconds to minutes, rounded
   const estimatedMinutes = Math.ceil(task.time / 60);
+
   return (
-    <div className="my-4 p-4 border border-gray-300 rounded-lg shadow-sm">
-      <p className="text-lg font-bold text-text mb-1">{task.name}</p>
-      <p className="text-sm text-text-muted mb-1">Est. {estimatedMinutes} minutes</p>
-      {task.streak>0 && <p className="text-sm text-text-muted mb-1">Streak: {task.streak} days</p>}
-      {elapsedTime >0 && <p className="text-sm text-text-muted mb-1">
-        Elapsed Time: {elapsedTime || 0} seconds
-      </p>}
+    <div className="my-4 p-4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <p className="text-lg font-bold text-text dark:text-gray-100 mb-1">
+        {task.name}
+      </p>
+      <p className="text-sm text-text-muted dark:text-gray-400 mb-1">
+        Est. {estimatedMinutes} minutes
+      </p>
+      {task.streak > 0 && (
+        <p className="text-sm text-text-muted dark:text-gray-400 mb-1">
+          Streak: {task.streak} days
+        </p>
+      )}
+      {elapsedTime > 0 && (
+        <p className="text-sm text-text-muted dark:text-gray-400 mb-1">
+          Elapsed Time: {elapsedTime || 0} seconds
+        </p>
+      )}
 
       <div className="flex gap-2">
         {!task.completedToday && (
           <>
-            {!isRunning ? <button
-              onClick={startTimer}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg"
-              disabled={isRunning}
-            >
-              Start
-            </button> :
-            <button
-              onClick={stopTimer}
-              className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
-              disabled={!isRunning}
-            >
-              Stop
-            </button>}
+            {!isRunning ? (
+              <button
+                onClick={startTimer}
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+                disabled={isRunning}
+              >
+                Start
+              </button>
+            ) : (
+              <button
+                onClick={stopTimer}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700"
+                disabled={!isRunning}
+              >
+                Stop
+              </button>
+            )}
           </>
         )}
 
         <button
           onClick={markComplete}
-          className={`px-4 py-2 rounded-lg ${
+          className={`px-4 py-2 rounded-lg transition ${
             task.completedToday
-              ? "bg-green-500 text-white"
-              : "bg-blue-500 text-white"
+              ? "bg-green-500 text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700"
+              : "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           }`}
         >
           {task.completedToday ? "Complete! 🎉" : "Mark Complete"}

@@ -13,8 +13,8 @@ export default function BadgeDisplay({ badge }: BadgeProps) {
     <div
       className={`p-6 rounded-xl text-center w-32 transition-all transform ${
         badge.isUnlocked
-          ? "bg-accent text-white shadow-lg"
-          : "bg-gray-200 text-gray-500 shadow-sm"
+          ? "bg-accent text-white shadow-lg dark:bg-orange-500 dark:text-gray-100"
+          : "bg-gray-200 text-gray-500 shadow-sm dark:bg-gray-700 dark:text-gray-400"
       }`}
     >
       <div className="text-5xl mb-3">{badge.emoji}</div>
@@ -25,3 +25,4 @@ export default function BadgeDisplay({ badge }: BadgeProps) {
     </div>
   );
 }
+

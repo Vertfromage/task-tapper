@@ -56,12 +56,14 @@ export const badgeConditions: Record<number, (tasks: Task[]) => boolean> = {
 
 export default function Badges({ badges }: BadgesProps) {
   return (
-    <div className="mb-4 p-4 bg-gray-100 rounded-2xl">
+    <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-xl font-semibold">Badges</h3>
+        <h3 className="text-xl font-semibold text-yellow-500 dark:text-yellow-400">
+          Badges
+        </h3>
         <Link
           href="/badges"
-          className="text-sm text-primary hover:text-primary-dark underline"
+          className="text-sm text-primary dark:text-blue-300 hover:text-primary-dark dark:hover:text-blue-400 underline"
         >
           See details
         </Link>
@@ -71,11 +73,11 @@ export default function Badges({ badges }: BadgesProps) {
           badge.isUnlocked ? (
             <span
               key={badge.id}
-              className="relative group px-2 py-1 bg-yellow-400 text-black rounded-md shadow-sm cursor-default focus:outline-none"
+              className="relative group px-2 py-1 bg-yellow-400 dark:bg-yellow-600 text-black dark:text-gray-900 rounded-md shadow-sm cursor-default focus:outline-none"
               tabIndex={0}
             >
               {badge.emoji}
-              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:flex group-focus:flex px-2 py-1 text-xs text-white bg-black rounded-md whitespace-nowrap shadow-lg">
+              <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:flex group-focus:flex px-2 py-1 text-xs text-white dark:text-gray-300 bg-black dark:bg-gray-700 rounded-md whitespace-nowrap shadow-lg">
                 {badge.name}
               </span>
             </span>

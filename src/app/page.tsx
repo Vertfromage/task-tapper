@@ -8,6 +8,7 @@ import { badgeData, badgeConditions } from "./components/Badges";
 import { Badge, Task } from "./components/types";
 import { initialTasks } from "./components/initialTasks";
 import { isNotToday } from "./components/helpers/time";
+import { DarkModeToggle } from "./components/ModeToggle";
 
 export default function Home() {
   const [totalPoints, setTotalPoints] = useState<number>(0);
@@ -103,22 +104,22 @@ export default function Home() {
   };
 
   return (
-    <main className="p-8">
-      <div className="flex flex-col md:flex-row items-center justify-between bg-gray-100 p-4 rounded-lg mb-6">
+    <main className="p-8 bg-background dark:bg-darkBackground text-foreground dark:text-darkForeground">
+      <div className="flex flex-col md:flex-row items-center justify-between bg-gray-100 dark:bg-darkGray p-4 rounded-lg mb-6">
         <div className="text-center md:text-left">
           <h1 className="text-3xl font-display font-semibold">Task Tapper</h1>
-          <p className="text-sm text-text-muted italic mt-1">
+          <p className="text-sm text-text-muted dark:text-gray-400 italic mt-1">
             Every day is a new day!
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
-          <h2 className="text-xl font-semibold text-primary">
+          <h2 className="text-xl font-semibold text-primary dark:text-blue-300">
             Total Points: {totalPoints}
           </h2>
-          <h3 className="text-lg font-semibold text-secondary">
+          <h3 className="text-lg font-semibold text-secondary dark:text-green-300">
             Points Today: {pointsToday}
           </h3>
-          <h3 className="text-lg text-text-muted">
+          <h3 className="text-lg text-text-muted dark:text-gray-400">
             Daily Streak: {streak} {streak === 1 ? "day" : "days"}
           </h3>
         </div>
@@ -131,12 +132,15 @@ export default function Home() {
         onComplete={handleTaskComplete}
         onAllTasksComplete={handleAllTasksComplete}
       />
+
       <button
         onClick={clearLocalStorage}
-        className="mt-4 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-dark"
+        className="mt-4 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-dark dark:bg-orange-600 dark:hover:bg-orange-500"
       >
         Reset All Progress
       </button>
+
+      <DarkModeToggle />
     </main>
   );
 }
