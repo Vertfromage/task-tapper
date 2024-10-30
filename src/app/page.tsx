@@ -6,7 +6,6 @@ import TaskList from "./components/TaskList";
 import Badges from "./components/Badges";
 import { badgeData, badgeConditions } from "./components/Badges";
 import { Badge, Task } from "./components/types";
-import Link from "next/link";
 import { initialTasks } from "./components/initialTasks";
 import { isNotToday } from "./components/helpers/time";
 
