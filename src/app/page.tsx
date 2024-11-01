@@ -35,9 +35,30 @@ export default function Home() {
     if (updatedTasks) setTasks(updatedTasks);
   }, []);
 
+  // Save tasks to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks)); // Save tasks to localStorage whenever they change
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
+
+  // Functions for adding and removing tasks
+  const addTask = (name: string, points: number, time: number) => {
+    const newTask: Task = {
+      id: Date.now(),
+      name,
+      points,
+      streak: 0,
+      lastCompletedDate: null,
+      completedToday: false,
+      time,
+      elapsedTime: 0,
+      isRunning: false,
+    };
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+  };
+
+  const removeTask = (taskId: number) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  };
 
   useEffect(() => {
     // Load badges from localStorage initially or use default badge data
@@ -133,6 +154,8 @@ export default function Home() {
         setTasks={setTasks}
         onComplete={handleTaskComplete}
         onAllTasksComplete={handleAllTasksComplete}
+        addTask={addTask}              // Pass addTask function to TaskList
+        removeTask={removeTask}         // Pass removeTask function to TaskList
       />
 
       <button

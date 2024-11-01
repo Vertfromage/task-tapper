@@ -5,12 +5,14 @@ interface TaskItemProps {
   task: Task;
   onComplete: () => void;
   updateTaskTime: (taskId: number, elapsedTime: number) => void;
+  onRemove: () => void;
 }
 
 export default function TaskItem({
   task,
   onComplete,
   updateTaskTime,
+  onRemove,
 }: TaskItemProps) {
   const [elapsedTime, setElapsedTime] = useState(task.elapsedTime || 0); // Stores total elapsed time
   const [isRunning, setIsRunning] = useState(task.isRunning || false);
@@ -57,21 +59,31 @@ export default function TaskItem({
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && isRunning && startTime) {
+      if (document.visibilityState === "visible" && isRunning && startTime) {
         const now = Date.now();
         setElapsedTime(Math.floor((now - startTime) / 1000)); // Update to the current time difference on visibility change
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [isRunning, startTime]);
 
   // Convert estimated time from seconds to minutes, rounded
   const estimatedMinutes = Math.ceil(task.time / 60);
 
   return (
-    <div className="my-4 p-4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+    <div className="relative my-4 p-4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      {/* Delete button as a small "X" in the upper right corner */}
+      <button
+        onClick={onRemove}
+        className="absolute top-2 right-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 focus:outline-none"
+        aria-label="Delete task"
+      >
+        &times;
+      </button>
+
       <p className="text-lg font-bold text-text dark:text-gray-100 mb-1">
         {task.name}
       </p>
@@ -90,7 +102,7 @@ export default function TaskItem({
         </p>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 mt-2">
         {!task.completedToday && (
           <>
             {!isRunning ? (

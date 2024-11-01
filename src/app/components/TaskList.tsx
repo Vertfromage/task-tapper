@@ -5,12 +5,15 @@
 import { useEffect } from "react";
 import TaskItem from "./TaskItem";
 import { Task } from "./types";
+import AddTaskForm from "./AddTaskForm";
 
 interface TaskListProps {
   tasks: Task[];
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   onComplete: (points: number) => void;
   onAllTasksComplete: () => void;
+  addTask: (name: string, points: number, time:number) => void;
+  removeTask: (taskId: number) => void;
 }
 
 export default function TaskList({
@@ -18,6 +21,8 @@ export default function TaskList({
   setTasks,
   onComplete,
   onAllTasksComplete,
+  addTask,
+  removeTask,
 }: TaskListProps) {
   useEffect(() => {
     const allCompleted = tasks.every((task) => task.completedToday);
@@ -74,12 +79,14 @@ export default function TaskList({
 
   return (
     <div className="space-y-4">
+      <AddTaskForm onAddTask={addTask}/>
       {tasks.map((task) => (
         <TaskItem
           key={task.id}
           task={task}
           onComplete={() => completeTask(task.id, task.points)}
           updateTaskTime={updateTaskTime} // Pass down function to update elapsed time
+          onRemove={() => removeTask(task.id)}  // Handle task removal
         />
       ))}
     </div>
