@@ -1,13 +1,14 @@
 export function isNotToday(date: string | null): boolean {
-    if(!date){
+    if (!date) {
         return true;
     }
     
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set time to midnight to only compare dates
-    
     const comparisonDate = new Date(date);
-    comparisonDate.setHours(0, 0, 0, 0); // Set time to midnight
-  
-    return comparisonDate.getTime() !== today.getTime();
-  }
+
+    return (
+        today.getFullYear() !== comparisonDate.getFullYear() ||
+        today.getMonth() !== comparisonDate.getMonth() ||
+        today.getDate() !== comparisonDate.getDate()
+    );
+}
