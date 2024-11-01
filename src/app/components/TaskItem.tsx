@@ -12,36 +12,60 @@ export default function TaskItem({
   onComplete,
   updateTaskTime,
 }: TaskItemProps) {
-  const [elapsedTime, setElapsedTime] = useState(task.elapsedTime || 0);
+  const [elapsedTime, setElapsedTime] = useState(task.elapsedTime || 0); // Stores total elapsed time
   const [isRunning, setIsRunning] = useState(task.isRunning || false);
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(null); // Stores the timestamp when the timer was started/resumed
 
   const startTimer = () => {
     if (!isRunning) {
       setIsRunning(true);
-      setTimer(setInterval(() => setElapsedTime((prev) => prev + 1), 1000));
+      setStartTime(Date.now() - elapsedTime * 1000); // Adjust startTime to account for the existing elapsed time
     }
   };
 
   const stopTimer = () => {
-    if (isRunning && timer) {
-      clearInterval(timer);
-      setTimer(null);
+    if (isRunning && startTime) {
+      const now = Date.now();
+      setElapsedTime(Math.floor((now - startTime) / 1000)); // Finalize elapsed time
       setIsRunning(false);
-      updateTaskTime(task.id, elapsedTime); // Save the time on stop
+      updateTaskTime(task.id, Math.floor((now - startTime) / 1000)); // Save final elapsed time
     }
   };
 
   const markComplete = () => {
     stopTimer();
     onComplete();
+    setStartTime(null);
   };
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (isRunning) {
+      intervalId = setInterval(() => {
+        if (startTime) {
+          const now = Date.now();
+          setElapsedTime(Math.floor((now - startTime) / 1000)); // Update elapsedTime based on startTime
+        }
+      }, 1000);
+    }
+
     return () => {
-      if (timer) clearInterval(timer); // Cleanup timer on unmount
+      if (intervalId) clearInterval(intervalId);
     };
-  }, [timer]);
+  }, [isRunning, startTime]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isRunning && startTime) {
+        const now = Date.now();
+        setElapsedTime(Math.floor((now - startTime) / 1000)); // Update to the current time difference on visibility change
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isRunning, startTime]);
 
   // Convert estimated time from seconds to minutes, rounded
   const estimatedMinutes = Math.ceil(task.time / 60);
@@ -61,7 +85,8 @@ export default function TaskItem({
       )}
       {elapsedTime > 0 && (
         <p className="text-sm text-text-muted dark:text-gray-400 mb-1">
-          Elapsed Time: {elapsedTime || 0} seconds
+          Elapsed Time: {Math.floor(elapsedTime / 60)}:
+          {String(elapsedTime % 60).padStart(2, "0")}
         </p>
       )}
 
