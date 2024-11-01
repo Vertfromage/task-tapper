@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 
 export function DarkModeToggle() {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check for saved preference in localStorage; default to true (dark mode) if none is found
-    const savedMode = localStorage.getItem('darkMode');
-    return savedMode ? JSON.parse(savedMode) : true;
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Toggle the dark mode class on the <html> element and save the preference in localStorage
+  useEffect(() => {
+    // Only run on the client side
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode) {
+      setIsDarkMode(JSON.parse(savedMode));
+    }
+  }, []);
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
