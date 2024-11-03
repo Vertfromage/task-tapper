@@ -41,7 +41,8 @@ export default function TaskList({
   };
 
   const completeTask = (taskId: number, points: number) => {
-    const today = new Date().toISOString().split("T")[0];
+    // Store today's date in UTC format for consistency
+    const today = new Date().toISOString(); // e.g., "2024-11-03T00:00:00Z"
 
     setTasks((prevTasks) =>
       prevTasks.map((task) => {
@@ -51,11 +52,12 @@ export default function TaskList({
           // Check if last completion was yesterday to maintain streak
           if (task.lastCompletedDate) {
             const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
+            yesterday.setUTCDate(yesterday.getUTCDate() - 1); // Move back one day in UTC
             const yesterdayString = yesterday.toISOString().split("T")[0];
 
-            newStreak =
-              task.lastCompletedDate === yesterdayString ? task.streak + 1 : 1;
+            const lastCompletedDateString = new Date(task.lastCompletedDate).toISOString().split("T")[0];
+
+            newStreak = lastCompletedDateString === yesterdayString ? task.streak + 1 : 1;
           } else {
             newStreak = 1; // Initialize streak if first completion
           }
@@ -64,7 +66,7 @@ export default function TaskList({
           return {
             ...task,
             completedToday: true,
-            lastCompletedDate: today,
+            lastCompletedDate: today, // Store full UTC date string
             streak: newStreak,
             time: Math.max(task.time, task.elapsedTime || 0), // Keep the maximum time
             elapsedTime: 0, // Reset elapsed time after completion
@@ -76,6 +78,7 @@ export default function TaskList({
 
     onComplete(points);
   };
+
 
   return (
     <div className="space-y-4">
