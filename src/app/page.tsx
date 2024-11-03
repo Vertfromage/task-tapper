@@ -24,15 +24,50 @@ export default function Home() {
 
   // Load tasks from localStorage on client, update for today
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks") || "null");
-    const updatedTasks = savedTasks?.map((task: Task) => {
-      if (isNotToday(task.lastCompletedDate)) {
-        task.completedToday = false;
+    const loadTasks = () => {
+      const savedTasks = JSON.parse(localStorage.getItem("tasks") || "null");
+      const savedTotalPoints = JSON.parse(localStorage.getItem("totalPoints") || "0");
+      const savedDailyPoints = JSON.parse(localStorage.getItem("pointsToday") || "0");
+      let anyToday = false;
+    
+      const updatedTasks = savedTasks?.map((task: Task) => {
+        if (isNotToday(task.lastCompletedDate)) {
+          task.completedToday = false;
+        } else {
+          anyToday = true;
+        }
+        return task;
+      });
+    
+      if (updatedTasks) setTasks(updatedTasks);
+    
+      // Check if any tasks were completed today
+      if (!anyToday) {
+        localStorage.setItem("pointsToday", JSON.stringify(0)); // Store as a string
+        setPointsToday(0);
+      } else {
+        setPointsToday(savedDailyPoints);
       }
-      return task;
-    });
-
-    if (updatedTasks) setTasks(updatedTasks);
+    
+      // Set total points
+      setTotalPoints(savedTotalPoints);
+    };
+  
+    // Load tasks initially
+    loadTasks();
+  
+    // Reload tasks whenever the app regains focus
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        loadTasks();
+      }
+    };
+  
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+  
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   // Save tasks to localStorage whenever they change
